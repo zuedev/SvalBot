@@ -1,0 +1,25 @@
+{
+  "dependencies": {
+    "@discordjs/brokers": "^0.2.2",
+    "@discordjs/core": "^1.0.1",
+    "@discordjs/proxy": "^2.0.1",
+    "@discordjs/voice": "^0.16.0",
+    "@sentry/node": "^7.78.0",
+    "cron": "^2.4.4",
+    "discord.js": "^14.13.0",
+    "dotenv": "^16.3.1",
+    "mongodb": "^6.1.0",
+    "node-emoji": "^2.1.0",
+    "openai": "^4.16.1"
+  },
+  "scripts": {
+    "start": "node src/main.js",
+    "dev": "node --watch src/main.js"
+  },
+  "type": "module",
+  "imports": {
+    "#root/*": "./src/*",
+    "#bot/*": "./src/bot/*",
+    "#controllers/*": "./src/controllers/*"
+  }
+}
