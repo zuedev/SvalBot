@@ -6,8 +6,8 @@ import {
   ActivityType,
 } from "discord.js";
 
-import fs from "fs";
 import log from "../library/log.js";
+import getGitCommit from "../library/getGitCommit.js";
 
 export default async () => {
   log("Bot is starting...");
@@ -23,11 +23,13 @@ export default async () => {
       name: "my boot logs",
     });
 
-    log(`Bot has started! Logged in as ${client.user.tag}`);
+    const version = `commit#${getGitCommit().hash.short}`;
+
+    log(`Bot has started! Logged in as ${client.user.tag} running ${version}`);
 
     client.user.setActivity({
-      type: ActivityType.Listening,
-      name: "to the voices",
+      type: ActivityType.Playing,
+      name: version,
     });
   });
 
