@@ -7,12 +7,7 @@ export default async () => {
 
   const app = express();
 
-  app.use(
-    cors({
-      // allow all origins
-      origin: "*",
-    })
-  );
+  app.use(cors({ origin: "*" }));
 
   app.get("/", (request, response) => {
     return response.send({

@@ -6,6 +6,7 @@ import {
   ActivityType,
 } from "discord.js";
 
+import fs from "fs";
 import log from "../library/log.js";
 
 export default async () => {
@@ -28,6 +29,28 @@ export default async () => {
       type: ActivityType.Listening,
       name: "to the voices",
     });
+  });
+
+  client.on(Events.MessageCreate, async (message) => {
+    if (message.author.bot) return;
+
+    const prefix = "!";
+
+    if (message.content.startsWith(prefix)) {
+      try {
+        const [command, ...args] = message.content
+          .slice(prefix.length)
+          .split(" ");
+
+        (await import(`./MessageCreate.Commands/${command}.js`)).default({
+          message,
+          args,
+        });
+      } catch (error) {
+        log(error);
+        message.channel.send("That command does not exist.");
+      }
+    }
   });
 
   await client.login(process.env.DISCORD_BOT_TOKEN);

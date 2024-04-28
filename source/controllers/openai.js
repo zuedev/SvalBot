@@ -46,7 +46,7 @@ export async function chatgpt({
   promptImageUrl = null,
   conversation = [],
   personality = "You are a helpful assistant.",
-  model = "gpt-4-vision-preview",
+  model = "gpt-4-turbo",
   user = "unknown",
   temperature = 1,
   max_tokens = 2048,
