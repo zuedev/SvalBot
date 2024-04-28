@@ -9,6 +9,8 @@ import log from "../library/log.js";
  */
 export default async ({ question, user = null }) => {
   try {
+    if (!question) return "You must provide a question.";
+
     const response = await chatgpt({
       personality:
         "Answer the question to the best of your ability. Try to be as brief as possible.",

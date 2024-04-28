@@ -9,7 +9,7 @@ import answerQuestion from "../../commands/answerQuestion.js";
 export default async ({ message, args }) => {
   let question = args.join(" ");
 
-  const response = answerQuestion({ question, user: message.author.id });
+  const response = await answerQuestion({ question, user: message.author.id });
 
   message.reply(response);
 };

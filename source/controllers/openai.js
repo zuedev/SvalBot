@@ -45,7 +45,8 @@ export async function chatgpt({
   promptText = null,
   promptImageUrl = null,
   conversation = [],
-  personality = "You are a helpful assistant.",
+  basePersonality = "Your name is SvalBot, a multi-purpose Discord bot for helping people do things on Discord. You are made by zuedev and are powered by OpenAI.",
+  personality = "",
   model = "gpt-4-turbo",
   user = "unknown",
   temperature = 1,
@@ -101,7 +102,7 @@ export async function chatgpt({
 
     const response = await openai.chat.completions.create({
       messages: [
-        { role: "system", content: personality },
+        { role: "system", content: `${basePersonality} ${personality}` },
         ...conversation,
         {
           role: "user",
