@@ -34,7 +34,10 @@ export async function insert(table, objects) {
   // if the object is not an array, make it an array
   if (!Array.isArray(objects)) objects = [objects];
 
-  const data = await mongo.db().collection(table).insertMany(objects);
+  const data = await mongo
+    .db(process.env.ENVIRONMENT)
+    .collection(table)
+    .insertMany(objects);
 
   await mongo.close();
 
@@ -56,7 +59,7 @@ export async function replace(table, filter, object) {
   const mongo = await connect();
 
   const data = await mongo
-    .db()
+    .db(process.env.ENVIRONMENT)
     .collection(table)
     .updateMany(filter, { $set: object }, { upsert: true });
 
@@ -79,7 +82,7 @@ export async function upsert(table, filter, object) {
   const mongo = await connect();
 
   const data = await mongo
-    .db()
+    .db(process.env.ENVIRONMENT)
     .collection(table)
     .updateMany(filter, object, { upsert: true });
 
@@ -102,7 +105,11 @@ export async function upsert(table, filter, object) {
 export async function find(table, filter) {
   const mongo = await connect();
 
-  const data = await mongo.db().collection(table).find(filter).toArray();
+  const data = await mongo
+    .db(process.env.ENVIRONMENT)
+    .collection(table)
+    .find(filter)
+    .toArray();
 
   await mongo.close();
 
@@ -123,7 +130,10 @@ export async function find(table, filter) {
 export async function remove(table, filter) {
   const mongo = await connect();
 
-  const data = await mongo.db().collection(table).deleteMany(filter);
+  const data = await mongo
+    .db(process.env.ENVIRONMENT)
+    .collection(table)
+    .deleteMany(filter);
 
   await mongo.close();
 
