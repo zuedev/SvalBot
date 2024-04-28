@@ -25,7 +25,7 @@ jobs:
 
           docker build . -t $TAG_BASE:${{ github.sha }}
 
-          docker tag $TAG_BASE:${{ github.sha }} $TAG_BASE:${{ github.ref }}
+          docker tag $TAG_BASE:${{ github.sha }} $TAG_BASE:${{ github.ref_name }}
           docker tag $TAG_BASE:${{ github.sha }} $TAG_BASE:latest
 
           docker push --all-tags $TAG_BASE
