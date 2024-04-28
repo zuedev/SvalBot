@@ -1,0 +1,27 @@
+# build and push image to ghcr
+
+name: ghcr
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Login to GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Build and push
+        run: |
+          TAG_BASE=ghcr.io/${{ github.repository }}
+          docker build . -t $TAG_BASE:${{ github.sha }}
+          docker tag $TAG_BASE:${{ github.sha }} $TAG_BASE:${{ github.branch }}
+          docker tag $TAG_BASE:${{ github.sha }} $TAG_BASE:latest
+          docker push --all-tags $TAG_BASE
