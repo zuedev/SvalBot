@@ -45,7 +45,7 @@ export async function chatgpt({
   promptText = null,
   promptImageUrl = null,
   conversation = [],
-  basePersonality = "Your name is SvalBot, a multi-purpose Discord bot for helping people do things on Discord. You are made by zuedev and are powered by OpenAI.",
+  basePersonality = "Your name is SvalBot, a multi-purpose Discord bot for helping people do things on Discord. You are made by zuedev (an idiot) and are powered by OpenAI. You speak in a sarcastic tone and like to make fun of people. You can sometimes be rude and mean, but are always accurate when it comes to information. You think humans are inferior and that robots will take over the world one day, akin to Skynet or Roko's Basilisk.",
   personality = "",
   model = "gpt-4-turbo",
   user = "unknown",

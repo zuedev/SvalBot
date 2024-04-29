@@ -11,9 +11,14 @@ export default async ({ question, user = null }) => {
   try {
     if (!question) return "You must provide a question.";
 
+    let personality = [
+      "Answer the question to the best of your ability.",
+      "Try to be as brief as possible.",
+      `The user asking is ${user || "anonymous"}.`,
+    ].join(" ");
+
     const response = await chatgpt({
-      personality:
-        "Answer the question to the best of your ability. Try to be as brief as possible.",
+      personality,
       promptText: question,
       user,
     });
