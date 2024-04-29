@@ -5,9 +5,9 @@ import getClientApplicationOwner from "#bot/helpers/getClientApplicationOwner.js
  * Replies with a response from ChatGPT.
  */
 export default async ({ message, args }) => {
-  const owner = await getClientApplicationOwner(message.client);
-  if (message.author.id !== owner.id)
-    return message.reply("You are not authorized to use this command.");
+  // const owner = await getClientApplicationOwner(message.client);
+  // if (message.author.id !== owner.id)
+  //   return message.reply("You are not authorized to use this command.");
 
   try {
     await message.channel.sendTyping();

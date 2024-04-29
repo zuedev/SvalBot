@@ -122,9 +122,9 @@ export async function dalle({
  * @param {string} voice The voice to use
  * @param {number} speed The speed of the speech
  *
- * @returns {Promise<{ status: number, audio?: Buffer, message?: string }>} The status code and audio buffer
+ * @returns {Promise<{ status: number, buffer?: Buffer, message?: string }>} The status code and audio buffer
  */
-export async function tts({ input, voice = "alloy", speed = 1 }) {
+export async function tts({ input, voice = "nova", speed = 1 }) {
   try {
     const { flagged } = await moderation(input);
 
@@ -139,11 +139,12 @@ export async function tts({ input, voice = "alloy", speed = 1 }) {
       voice,
       input,
       speed,
+      response_format: "wav",
     });
 
     return {
       status: 200,
-      audio: Buffer.from(await response.arrayBuffer()),
+      buffer: Buffer.from(await response.arrayBuffer()),
     };
   } catch (error) {
     console.error(error);
