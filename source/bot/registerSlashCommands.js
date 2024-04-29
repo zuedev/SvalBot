@@ -22,9 +22,7 @@ async function globalCommands(client) {
     globalCommands.push(data);
   }
 
-  const application = await client.rest.get("/applications/@me");
-
-  await client.rest.put(`/applications/${application.id}/commands`, {
+  await client.rest.put(`/applications/${client.application.id}/commands`, {
     body: globalCommands,
   });
 
