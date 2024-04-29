@@ -36,7 +36,7 @@ export default async () => {
 
   client.on(Events.MessageCreate, async (message) => {
     if (process.env.DEVELOPMENT_GUILD_ID)
-      if (message.guild.id !== process.env.DEVELOPMENT_GUILD_ID) return;
+      if (message.guild?.id !== process.env.DEVELOPMENT_GUILD_ID) return;
 
     if (message.author.bot) return;
 
