@@ -1,5 +1,5 @@
-import { chatgpt } from "../controllers/openai.js";
-import log from "../library/log.js";
+import { chatgpt } from "#controllers/openai.js";
+import log from "#library/log.js";
 
 /**
  * Uses OpenAI's ChatGPT to answer a question.

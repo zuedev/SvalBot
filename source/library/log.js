@@ -1,4 +1,4 @@
-import { insert } from "../controllers/mongodb.js";
+import { insert } from "#controllers/mongodb.js";
 
 /**
  * Logs an object to the console and database.

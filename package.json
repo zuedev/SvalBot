@@ -10,5 +10,13 @@
   "type": "module",
   "scripts": {
     "start": "node source/main.js"
+  },
+  "imports": {
+    "#source/*": "./source/*",
+    "#bot/*": "./source/bot/*",
+    "#api/*": "./source/api/*",
+    "#commands/*": "./source/commands/*",
+    "#library/*": "./source/library/*",
+    "#controllers/*": "./source/controllers/*"
   }
 }

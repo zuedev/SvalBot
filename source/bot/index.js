@@ -6,8 +6,9 @@ import {
   ActivityType,
 } from "discord.js";
 
-import log from "../library/log.js";
-import getGitCommit from "../library/getGitCommit.js";
+import log from "#library/log.js";
+import getGitCommit from "#library/getGitCommit.js";
+import registerSlashCommands from "./registerSlashCommands.js";
 
 export default async () => {
   log("Bot is starting...");
@@ -58,5 +59,24 @@ export default async () => {
     }
   });
 
+  client.on(Events.InteractionCreate, async (interaction) => {
+    if (!interaction.isCommand()) return;
+
+    try {
+      (
+        await import(
+          `./InteractionCreate.Commands/${interaction.commandName}.js`
+        )
+      ).default.execute(interaction);
+    } catch (error) {
+      log(error);
+      interaction.reply("I couldn't execute that command.");
+    }
+  });
+
   await client.login(process.env.DISCORD_BOT_TOKEN);
+
+  log("Logged in, registering slash commands...");
+
+  await registerSlashCommands(client);
 };

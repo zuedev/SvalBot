@@ -1,4 +1,5 @@
-import answerQuestion from "../../commands/answerQuestion.js";
+import answerQuestion from "#commands/answerQuestion.js";
+import getClientApplicationOwner from "#bot/helpers/getClientApplicationOwner.js";
 
 /**
  * Replies with the answer to the question.
@@ -7,6 +8,11 @@ import answerQuestion from "../../commands/answerQuestion.js";
  * @returns {Promise<void>} A promise that resolves when the command is handled.
  */
 export default async ({ message, args }) => {
+  const owner = await getClientApplicationOwner(message.client);
+
+  if (message.author.id !== owner.id)
+    return message.reply("You are not authorized to use this command.");
+
   let question = args.join(" ");
 
   const response = await answerQuestion({ question, user: message.author.id });

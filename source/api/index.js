@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import log from "../library/log.js";
+import log from "#library/log.js";
 
 export default async () => {
   log("API is starting...");
