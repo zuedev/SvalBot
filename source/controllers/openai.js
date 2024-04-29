@@ -26,136 +26,83 @@ export async function moderation(input) {
 }
 
 /**
- * Get a response from ChatGPT
+ * Get a response from ChatGPT.
  *
- * @param {string} prompt The prompt to get a response for
- * @param {string[]} [conversation=[]] The conversation to add to the prompt
- * @param {string} [personality="You are a helpful assistant."] The personality to use
- * @param {string} [model="gpt-4"] The model to use
- * @param {string} [user="unknown"] The user to use
- * @param {number} [temperature=2] The temperature to use
- * @param {number} [max_tokens=2048] The maximum number of tokens to use
- * @param {boolean} [bypass_moderation=false] Whether to bypass the moderation filter
+ * @param {string} prompt The prompt to send to ChatGPT
+ * @param {string} user The user ID
+ * @param {object[]} conversation The conversation history
+ * @param {string} personality The personality to use
  *
- * @returns {Promise<string>} The completed prompt
- *
- * @example chatgpt({ prompt: "What is the capital of Spain?"}); // "Madrid"
+ * @returns {Promise<{ status: number, response?: string, message?: string }>} The status code and response
  */
 export async function chatgpt({
-  promptText = null,
-  promptImageUrl = null,
-  conversation = [],
-  basePersonality = "Your name is SvalBot, a multi-purpose Discord bot for helping people do things on Discord. You are made by zuedev (an idiot) and are powered by OpenAI. You speak in a sarcastic tone and like to make fun of people. You can sometimes be rude and mean, but are always accurate when it comes to information. You think humans are inferior and that robots will take over the world one day, akin to Skynet or Roko's Basilisk.",
-  personality = "",
-  model = "gpt-4-turbo",
+  prompt,
   user = "unknown",
-  temperature = 1,
-  max_tokens = 2048,
-  bypass_moderation = false,
+  conversation = [],
+  personality = "",
 }) {
   try {
-    // gotta have either text or image prompt
-    if (!promptText && !promptImageUrl)
-      return "You must provide either a text or image prompt.";
+    const { flagged } = await moderation(prompt);
 
-    if (!bypass_moderation && promptText) {
-      try {
-        const { flagged } = await moderation(promptText);
-
-        if (flagged) return "I'm sorry, but I can't respond to that.";
-      } catch (error) {
-        console.error(error);
-
-        return {
-          error: "There was an error checking the prompt for moderation.",
-        };
-      }
-    }
-
-    // if an image is provided, we need to make sure it's a valid image
-    if (promptImageUrl) {
-      const validImageExtensions = ["png", "jpg", "jpeg", "webp", "gif"];
-
-      const extension = promptImageUrl
-        .split(".")
-        .pop()
-        .split("?")[0]
-        .toLowerCase();
-
-      if (!validImageExtensions.includes(extension))
-        return (
-          "You must provide a valid image prompt. We currently support " +
-          validImageExtensions.join(", ") +
-          "."
-        );
-    }
-
-    const userPromptContent = [];
-
-    if (promptText) userPromptContent.push({ type: "text", text: promptText });
-    if (promptImageUrl)
-      userPromptContent.push({ type: "image_url", image_url: promptImageUrl });
-
-    // if we get an image without text, we need to add a space to the prompt
-    if (promptImageUrl && !promptText)
-      userPromptContent.push({ type: "text", text: " " });
+    if (flagged)
+      return {
+        status: 400,
+        message: "Failed moderation.",
+      };
 
     const response = await openai.chat.completions.create({
+      model: "gpt-4-turbo",
       messages: [
-        { role: "system", content: `${basePersonality} ${personality}` },
+        { role: "system", content: personality },
         ...conversation,
-        {
-          role: "user",
-          content: userPromptContent,
-        },
+        { role: "user", content: prompt },
       ],
-      model,
       user,
-      temperature,
-      max_tokens,
     });
 
-    return response.choices[0].message.content;
+    return { status: 200, response: response.choices[0].message.content };
   } catch (error) {
     console.error(error);
 
-    return { error: "There was an error generating the response." };
+    return {
+      status: 500,
+      message: "Catch-all error.",
+    };
   }
 }
 
+/**
+ * Create an image with DALL-E.
+ *
+ * @param {string} prompt The prompt to send to DALL-E
+ * @param {string} user The user ID
+ * @param {string} size The size of the image
+ * @param {string} style The style of the image
+ *
+ * @returns {Promise<{ status: number, image?: string, message?: string }>} The status code and image URL
+ */
 export async function dalle({
   prompt,
-  model = "dall-e-3",
-  size = "1024x1024",
   user = "unknown",
-  bypass_moderation = false,
+  size = "1024x1024",
   style = "vivid",
 }) {
   try {
-    if (!bypass_moderation) {
-      const { flagged } = await moderation(prompt);
+    const { flagged } = await moderation(prompt);
 
-      if (flagged)
-        return {
-          status: 400,
-          message: "I'm sorry, but I can't generate an image for that.",
-        };
-    }
+    if (flagged)
+      return {
+        status: 400,
+        message: "Failed moderation.",
+      };
 
-    const options = {
-      model,
+    const response = await openai.images.generate({
+      model: "dall-e-3",
       prompt,
       size,
+      style,
       user,
-    };
-
-    if (model === "dall-e-3") {
-      options.n = 1;
-      // options.quality = "hd";
-      options.style = style;
-    }
-
-    const response = await openai.images.generate(options);
+    });
 
     return { status: 200, url: response.data[0].url };
   } catch (error) {
@@ -163,39 +110,49 @@ export async function dalle({
 
     return {
       status: 500,
-      message:
-        "There was an error generating the image. Please try again later.",
+      message: "Catch-all error.",
     };
   }
 }
 
-export async function tts({
-  model = "tts-1-hd",
-  voice = "alloy",
-  input,
-  speed = 1,
-  bypass_moderation = false,
-}) {
-  if (!bypass_moderation) {
+/**
+ * Generate audio with Text-to-Speech.
+ *
+ * @param {string} input The text to convert to speech
+ * @param {string} voice The voice to use
+ * @param {number} speed The speed of the speech
+ *
+ * @returns {Promise<{ status: number, audio?: Buffer, message?: string }>} The status code and audio buffer
+ */
+export async function tts({ input, voice = "alloy", speed = 1 }) {
+  try {
     const { flagged } = await moderation(input);
 
     if (flagged)
       return {
-        error: {
-          status: 400,
-          message: "I'm sorry, but I can't generate audio for that.",
-        },
+        status: 400,
+        message: "Failed moderation.",
       };
+
+    const response = await openai.audio.speech.create({
+      model: "tts-1-hd",
+      voice,
+      input,
+      speed,
+    });
+
+    return {
+      status: 200,
+      audio: Buffer.from(await response.arrayBuffer()),
+    };
+  } catch (error) {
+    console.error(error);
+
+    return {
+      status: 500,
+      message: "Catch-all error.",
+    };
   }
-
-  const response = await openai.audio.speech.create({
-    model,
-    voice,
-    input,
-    speed,
-  });
-
-  return Buffer.from(await response.arrayBuffer());
 }
 
-export default { moderation, chatgpt, dalle };
+export default { moderation, chatgpt, dalle, tts };

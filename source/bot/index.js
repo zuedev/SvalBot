@@ -67,7 +67,7 @@ export default async () => {
         await import(
           `./InteractionCreate.Commands/${interaction.commandName}.js`
         )
-      ).default.execute(interaction);
+      ).default.execute({ interaction });
     } catch (error) {
       log(error);
       interaction.reply("I couldn't execute that command.");
