@@ -20,9 +20,8 @@ export default {
     try {
       const prompt = interaction.options.getString("prompt");
 
-      await interaction.channel.sendTyping();
-
       await interaction.deferReply();
+      await interaction.channel.sendTyping();
 
       const response = await getResponse(prompt);
 

@@ -20,6 +20,7 @@ export default {
     try {
       const prompt = interaction.options.getString("prompt");
 
+      await interaction.deferReply();
       await interaction.channel.sendTyping();
 
       const response = await chatgpt({
@@ -31,7 +32,7 @@ export default {
 
       // is the reponse more than 2000 characters?
       if (response.response.length > 2000)
-        return interaction.reply({
+        return interaction.followUp({
           content:
             "Sending the response as a file as it's too long to send as a message.",
           files: [
@@ -42,11 +43,11 @@ export default {
           ],
         });
 
-      return interaction.reply(response.response);
+      return interaction.followUp(response.response);
     } catch (error) {
       console.error(error);
 
-      return interaction.reply("Failed to get a response from ChatGPT.");
+      return interaction.followUp("Failed to get a response from ChatGPT.");
     }
   },
 };
