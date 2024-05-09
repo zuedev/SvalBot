@@ -1,6 +1,7 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import getClientApplicationOwner from "#bot/helpers/getClientApplicationOwner.js";
 import { VertexAI } from "@google-cloud/vertexai";
+import { convert } from "html-to-text";
 
 export default {
   data: new SlashCommandBuilder()
@@ -65,6 +66,15 @@ async function getResponse(prompt) {
       candidateCount: 1,
     },
   });
+
+  // does the prompt contain a url? if so, fetch it and convert it to text
+  if (prompt.match(/https?:\/\/\S+/)) {
+    const url = prompt.match(/https?:\/\/\S+/)[0];
+    const html = await (await fetch(url)).text();
+    // remove url from prompt
+    prompt = prompt.replace(url, "");
+    prompt = prompt + "\n\n" + "Reference from URL:\n\n" + convert(html);
+  }
 
   const response = await generativeModel.generateContent({
     contents: [{ role: "user", parts: [{ text: prompt }] }],
