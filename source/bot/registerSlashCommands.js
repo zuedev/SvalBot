@@ -1,15 +1,9 @@
 import { readdirSync } from "fs";
 import log from "#library/log.js";
+import { Routes } from "discord.js";
 
-/**
- * Register all slash commands.
- */
 export default async (client) => {
-  await globalCommands(client);
-};
-
-async function globalCommands(client) {
-  const globalCommands = [];
+  const commands = [];
 
   const commandFiles = readdirSync(
     "./source/bot/InteractionCreate.Commands"
@@ -19,7 +13,7 @@ async function globalCommands(client) {
     const { data } = (await import(`./InteractionCreate.Commands/${file}`))
       .default;
 
-    globalCommands.push(data);
+    commands.push(data);
   }
 
   if (process.env.DEVELOPMENT_GUILD_ID) {
@@ -28,24 +22,25 @@ async function globalCommands(client) {
     );
 
     await client.rest.put(
-      `/applications/${client.application.id}/guilds/${process.env.DEVELOPMENT_GUILD_ID}/commands`,
+      Routes.applicationGuildCommands(
+        client.application.id,
+        process.env.DEVELOPMENT_GUILD_ID
+      ),
       {
-        body: globalCommands,
+        body: commands,
       }
     );
 
     log(
-      `Slash commands registered in development guild: ${globalCommands.map(
+      `Slash commands registered in development guild: ${commands.map(
         (c) => c.name
       )}`
     );
   } else {
-    await client.rest.put(`/applications/${client.application.id}/commands`, {
-      body: globalCommands,
+    await client.rest.put(Routes.applicationCommands(client.application.id), {
+      body: commands,
     });
 
-    log(
-      `Global slash commands registered: ${globalCommands.map((c) => c.name)}`
-    );
+    log(`Global slash commands registered: ${commands.map((c) => c.name)}`);
   }
-}
+};
