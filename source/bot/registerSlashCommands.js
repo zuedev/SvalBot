@@ -22,9 +22,30 @@ async function globalCommands(client) {
     globalCommands.push(data);
   }
 
-  await client.rest.put(`/applications/${client.application.id}/commands`, {
-    body: globalCommands,
-  });
+  if (process.env.DEVELOPMENT_GUILD_ID) {
+    log(
+      "Development guild ID set, registering slash commands there and clearing global commands."
+    );
 
-  log(`Global slash commands registered: ${globalCommands.map((c) => c.name)}`);
+    await client.rest.put(
+      `/applications/${client.application.id}/guilds/${process.env.DEVELOPMENT_GUILD_ID}/commands`,
+      {
+        body: globalCommands,
+      }
+    );
+
+    log(
+      `Slash commands registered in development guild: ${globalCommands.map(
+        (c) => c.name
+      )}`
+    );
+  } else {
+    await client.rest.put(`/applications/${client.application.id}/commands`, {
+      body: globalCommands,
+    });
+
+    log(
+      `Global slash commands registered: ${globalCommands.map((c) => c.name)}`
+    );
+  }
 }
