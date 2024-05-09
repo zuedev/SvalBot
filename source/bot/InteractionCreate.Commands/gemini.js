@@ -32,7 +32,7 @@ export default {
             "Sending the response as a file as it's too long to send as a message.",
           files: [
             {
-              attachment: Buffer.from(response.response),
+              attachment: Buffer.from(response),
               name: "response.txt",
             },
           ],
@@ -59,7 +59,7 @@ async function getResponse(prompt) {
   });
 
   const generativeModel = vertex_ai.preview.getGenerativeModel({
-    model: "gemini-1.5-pro-preview-0409",
+    model: "gemini-experimental",
     generationConfig: {
       maxOutputTokens: 8192,
       candidateCount: 1,
