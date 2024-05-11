@@ -1,8 +1,5 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 
-/**
- * Responds with "Pong!".
- */
 export default {
   data: new SlashCommandBuilder()
     .setName("ping")
