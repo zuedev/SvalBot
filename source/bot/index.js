@@ -23,7 +23,7 @@ export default async () => {
       name: "my boot logs",
     });
 
-    log(`Bot has started! Logged in as ${client.user.tag} running ${version}`);
+    log(`Bot has started! Logged in as ${client.user.tag}`);
 
     client.user.setActivity({
       type: ActivityType.Playing,
