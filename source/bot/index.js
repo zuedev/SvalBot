@@ -7,7 +7,6 @@ import {
 } from "discord.js";
 
 import log from "#library/log.js";
-import getGitCommit from "#library/getGitCommit.js";
 import registerSlashCommands from "./registerSlashCommands.js";
 
 export default async () => {
@@ -24,13 +23,11 @@ export default async () => {
       name: "my boot logs",
     });
 
-    const version = `commit#${getGitCommit().hash.short}`;
-
     log(`Bot has started! Logged in as ${client.user.tag} running ${version}`);
 
     client.user.setActivity({
       type: ActivityType.Playing,
-      name: version,
+      name: "the great game..."
     });
   });
 
